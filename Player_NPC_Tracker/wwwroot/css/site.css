@@ -1,0 +1,39 @@
+body {
+    background-color: #fdf1e0; /* Parchment-like background */
+    font-family: 'Merriweather', serif; /* A font that has a fantasy feel */
+}
+
+#addCharacterForm {
+    background-color: #f4e4bc;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+#characterList {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+input[type="text"],
+input[type="number"],
+button {
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button {
+    background-color: #8b5f2e; /* Earthy brown color for buttons */
+    color: white;
+    cursor: pointer; /* Changes the cursor to signify button functionality */
+}
+
+    button:hover {
+        background-color: #724c22; /* Darker brown on hover */
+    }

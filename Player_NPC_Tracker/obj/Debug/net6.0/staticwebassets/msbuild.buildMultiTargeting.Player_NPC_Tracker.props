@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Player_NPC_Tracker.props" />
+</Project>

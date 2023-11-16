@@ -1,0 +1,115 @@
+﻿@page
+@model Player_NPC_Tracker.Pages.IndexModel
+
+<h2>Turn Order</h2>
+
+<form id="addCharacterForm">
+    <input type="text" id="characterName" placeholder="Character Name" />
+    <input type="number" id="initiative" placeholder="Initiative" />
+    <input type="number" id="HP" placeholder="HP Value" />
+    <input type="button" value="Add Player" onclick="addCharacter()" />
+    <input type="button" value="Clear" onclick="clearTurnOrder()" />
+</form>
+
+<h3>Current Turn Order:</h3>
+<ol id="characterList">
+    <!-- Characters will be added here by JavaScript -->
+</ol>
+
+@section Scripts {
+    <script>
+        // Load characters from local storage and display them
+        function loadCharacters() {
+            const characters = JSON.parse(localStorage.getItem('characters')) || [];
+            characters.sort((a, b) => b.initiative - a.initiative);
+            const listElement = document.getElementById('characterList');
+            listElement.innerHTML = ''; // Clear the list
+            characters.forEach((character, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${character.name} - Initiative: ${character.initiative} - HP: ${character.CurrentHP}/${character.HPTotal}
+                    <input type="number" id="hpChange${index}" placeholder="HP Change" />
+                    <button onclick="adjustHP(${index}, true)">Heal</button>
+                    <button onclick="adjustHP(${index}, false)">Damage</button>
+                    <button onclick="deleteCharacter(${index})">Delete</button>
+                `;
+                listElement.appendChild(li);
+            });
+        }
+
+
+        // Add a new character
+        function addCharacter() {
+            const nameInput = document.getElementById('characterName');
+            const initiativeInput = document.getElementById('initiative');
+            const HPInput = document.getElementById('HP');
+
+            // Validation checks
+            if (nameInput.value.trim() === "") {
+                alert("Please enter a character name.");
+                return;
+            }
+            const initiative = parseInt(initiativeInput.value, 10);
+            if (isNaN(initiative) || initiative <= 0) {
+                alert("Please enter a valid initiative (greater than 0).");
+                return;
+            }
+            const hp = parseInt(HPInput.value, 10);
+            if (isNaN(hp) || hp <= 0) {
+                alert("Please enter a valid HP value (greater than 0).");
+                return;
+            }
+
+            const character = {
+                name: nameInput.value.trim(),
+                initiative: initiative,
+                HPTotal: hp,
+                CurrentHP: hp
+            };
+            const characters = JSON.parse(localStorage.getItem('characters')) || [];
+            characters.push(character);
+            localStorage.setItem('characters', JSON.stringify(characters));
+            nameInput.value = ''; // Reset the name field
+            initiativeInput.value = ''; // Reset the initiative field
+            HPInput.value = ''; // Reset HP field
+            loadCharacters(); // Refresh the list
+        }
+
+
+        //Delete char
+        function deleteCharacter(characterIndex) {
+            let characters = JSON.parse(localStorage.getItem('characters')) || [];
+            characters.splice(characterIndex, 1); // Remove the character at the specified index
+            localStorage.setItem('characters', JSON.stringify(characters));
+            loadCharacters(); // Refresh the list
+        }
+
+
+        //change HP
+        function adjustHP(characterIndex, isHealing) {
+            const hpChangeInput = document.getElementById(`hpChange${characterIndex}`);
+            const hpChange = parseInt(hpChangeInput.value, 10);
+            if (isNaN(hpChange)) return;
+
+            const characters = JSON.parse(localStorage.getItem('characters')) || [];
+            if (isHealing) {
+                characters[characterIndex].CurrentHP = Math.min(characters[characterIndex].CurrentHP + hpChange, characters[characterIndex].HPTotal);
+            } else {
+                characters[characterIndex].CurrentHP = Math.max(characters[characterIndex].CurrentHP - hpChange, 0);
+            }
+
+            localStorage.setItem('characters', JSON.stringify(characters));
+            loadCharacters(); // Refresh the list
+        }
+
+
+        //Clear characters
+        function clearTurnOrder() {
+            localStorage.removeItem('characters'); // Remove the characters from local storage
+            document.getElementById('characterList').innerHTML = ''; // Clear the list in the UI
+        }
+
+        // Call loadCharacters on page load
+        window.onload = loadCharacters;
+    </script>
+}
